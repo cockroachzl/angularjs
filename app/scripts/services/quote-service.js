@@ -11,7 +11,10 @@ angular.module('stockDogApp')
       if (quotes.length === stocks.length) {
         _.each(quotes, function (quote, idx) {
           var stock = stocks[idx];
-          stock.lastPrice = parseFloat(quote.LastTradePriceOnly);
+          stock.lastPrice = parseFloat(quote.LastTradePriceOnly)
+          if (!isMarketOpen()) {
+            stock.lastPrice += _.random(-0.5, 0.5); //simulate fluctuation
+          }
           stock.change = quote.Change;
           stock.percentChange = quote.ChangeinPercent;
           stock.marketValue = stock.shares * stock.lastPrice;
@@ -20,6 +23,17 @@ angular.module('stockDogApp')
         });
       }
     };
+
+    var isMarketOpen = function() {
+      var now = new Date();
+      var current_hour = now.getHours();
+      var current_minutes = current_hour * 60 + now.getMinutes();
+      var marketOpen = 9 *60 + 30;
+      var marketClose = 16 * 60 + 30;
+      if (current_minutes >= marketOpen && current_minutes <= marketClose) {
+        return true;
+      }
+    }
 
     this.getStocks = function () {
       return stocks;
@@ -36,6 +50,7 @@ angular.module('stockDogApp')
     };
 
     // Main processing function for communicating with Yahoo Finance API
+    // TODO replace jsonp with regular get
     this.fetch = function () {
       var symbols = _.reduce(stocks, function (symbols, stock) {
         //symbols.push(stock.company.symbol);

@@ -15,7 +15,7 @@ angular.module('stockDogApp')
     var WatchlistModel = {
       addStock: function (stock) {
         var existingStock = _.find(this.stocks, function (s) {
-          return s.company.symbol === stock.company.symbol;
+          return s.company === stock.company;
         });
         if (existingStock) {
           existingStock.shares += stock.shares;
@@ -28,7 +28,7 @@ angular.module('stockDogApp')
       },
       removeStock: function (stock) {
         _.remove(this.stocks, function (s) {
-          return s.company.symbol === stock.company.symbol;
+          return s.company === stock.company;
         });
         this.recalculate();
         saveModel();
